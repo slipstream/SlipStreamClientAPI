@@ -44,14 +44,11 @@
 
 (defn str->json [s]
   #?(:clj  (json/read-str s :key-fn keyword)
-     :cljs (js->clj (JSON.parse s) {:keywordize-keys true})))
-
-(defn kw->string [kw]
-  (if (keyword? kw) (name kw) kw))
+     :cljs (js->clj (JSON.parse s) :keywordize-keys true)))
 
 (defn edn->json [json]
   #?(:clj  (json/write-str json)
-     :cljs (JSON.stringify (w/postwalk kw->string json))))
+     :cljs (JSON.stringify (clj->js json))))
 
 (defn json->edn [s]
   (cond

@@ -40,7 +40,7 @@
              "https://localhost:8201/api/service-info" "service-info"
              "https://localhost:8201/api/usage-record" "usage-records"))
 
-(defn body-tests []
+(defn body-tests [f]
   (go
     (let [body {:alpha 1
                 :beta  "2"
@@ -50,13 +50,14 @@
           c (chan 1 (t/body-as-json) identity)
           _ (>! c {:body json})
           result (<! c)]
-      (is (= body result)))))
+      (is (= body result)))
+    (if f (f))))
 
 (deftest check-body-as-json
-  #?(:clj (<!! (body-tests))
-     :cljs (async done (body-tests) (done))))
+  #?(:clj (<!! (body-tests nil))
+     :cljs (async done (body-tests done))))
 
-(defn exception-tests []
+(defn exception-tests [f]
   (go
     (let [msg "msg-to-match"
           data {:dummy "data"}
@@ -67,9 +68,10 @@
       (is (e/error? result))
       (is (= msg #?(:clj (.getMessage result)
                     :cljs (.-message result))))
-      (is (= data (ex-data result))))))
+      (is (= data (ex-data result))))
+    (if f (f))))
 
 (deftest check-body-as-json-error
-  #?(:clj (<!! (exception-tests))
-     :cljs (async done (exception-tests) (done))))
+  #?(:clj (<!! (exception-tests nil))
+     :cljs (async done (exception-tests done))))
 
