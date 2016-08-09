@@ -40,7 +40,7 @@
              "https://localhost:8201/api/service-info" "service-info"
              "https://localhost:8201/api/usage-record" "usage-records"))
 
-(defn body-tests [f]
+(defn body-tests [done]
   (go
     (let [body {:alpha 1
                 :beta  "2"
@@ -51,13 +51,13 @@
           _ (>! c {:body json})
           result (<! c)]
       (is (= body result)))
-    (if f (f))))
+    (if done (done))))
 
 (deftest check-body-as-json
   #?(:clj (<!! (body-tests nil))
      :cljs (async done (body-tests done))))
 
-(defn exception-tests [f]
+(defn exception-tests [done]
   (go
     (let [msg "msg-to-match"
           data {:dummy "data"}
@@ -69,7 +69,7 @@
       (is (= msg #?(:clj (.getMessage result)
                     :cljs (.-message result))))
       (is (= data (ex-data result))))
-    (if f (f))))
+    (if done (done))))
 
 (deftest check-body-as-json-error
   #?(:clj (<!! (exception-tests nil))
