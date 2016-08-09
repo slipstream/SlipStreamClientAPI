@@ -6,9 +6,7 @@
   (:require
     [sixsq.slipstream.client.api.utils.http-sync :as http]  ;; FIXME: Wrong library included.
     [sixsq.slipstream.client.api.utils.error :as e]
-    [clojure.walk :as w]
-    #?(:clj [clojure.data.json :as json])
-    [superstring.core :as s]))
+    #?(:clj [clojure.data.json :as json])))
 
 (def action-uris {:add    "http://sixsq.com/slipstream/1/Action/add"
                   :delete "http://sixsq.com/slipstream/1/Action/delete"
