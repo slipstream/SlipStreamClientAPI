@@ -7,9 +7,7 @@
     #?(:clj
     [clojure.core.async :as a :refer [go chan <!! <! >!]]
        :cljs [cljs.core.async :refer [chan <! >!]])
-    #?(:clj
-    [clojure.test :refer [deftest is are testing run-tests]]
-       :cljs [cljs.test :refer-macros [deftest is are testing run-tests async]])))
+    [clojure.test :refer [deftest is are testing run-tests #?(:cljs async)]]))
 
 (def test-cep {:id               "cloud-entry-point"
                :resourceURI      "http://schemas.dmtf.org/cimi/2/CloudEntryPoint"
