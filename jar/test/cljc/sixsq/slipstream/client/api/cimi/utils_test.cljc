@@ -4,9 +4,8 @@
   (:require
     [sixsq.slipstream.client.api.cimi.utils :as t]
     [sixsq.slipstream.client.api.utils.error :as e]
-    #?(:clj
-    [clojure.core.async :as a :refer [go chan <!! <! >!]]
-       :cljs [cljs.core.async :refer [chan <! >!]])
+    [clojure.core.async :refer #?(:clj [chan <! >! go <!!]
+                                  :cljs [chan <! >!])]
     [clojure.test :refer [deftest is are testing run-tests #?(:cljs async)]]))
 
 (def test-cep {:id               "cloud-entry-point"
