@@ -41,7 +41,8 @@
   (chan 1 (u/extract-op-url op baseURI) identity))
 
 (defn get-collection-op-url
-  "Returns the URL for the given operation and collection within a channel."
+  "Returns the URL for the given operation and collection within a channel.
+   The collection can be identified either by its name or URL."
   [token {:keys [baseURI] :as cep} op collection-name-or-url]
   (let [url (or (u/get-collection-url cep collection-name-or-url)
                 (u/verify-collection-url cep collection-name-or-url))
