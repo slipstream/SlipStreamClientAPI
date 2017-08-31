@@ -60,6 +60,14 @@
     (map e/throw-if-error)
     (map response-tuple)))
 
+(defn event-transducer
+  "Transducer that extracts the data from an SSE message and converts it into
+   an EDN document."
+  []
+  (comp
+    (map :data)
+    (map json/json->edn)))
+
 (defn unauthorized
   "Returns a tuple containing an exception that has a 403 unauthorized code
    and a reference to the resource. The second element of the tuple is nil."

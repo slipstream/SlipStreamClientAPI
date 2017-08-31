@@ -81,7 +81,7 @@
   (get [this url-or-id options]
     (go
       (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/get @state url-or-id))]
+      (let [[response token] (<! (impl/get @state url-or-id options))]
         (u/update-state state :token token)
         response)))
 

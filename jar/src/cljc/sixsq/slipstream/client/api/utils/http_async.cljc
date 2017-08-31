@@ -6,7 +6,8 @@
   (:refer-clojure :exclude [get])
   (:require
     [sixsq.slipstream.client.api.utils.http-utils :as hu]
-    [kvlt.chan :as kc]))
+    [kvlt.chan :as kc]
+    [kvlt.core :as kvlt]))
 
 (defn- request-async!
   [meth url {:keys [chan] :as req}]
@@ -28,3 +29,7 @@
 (defn delete
   [url & [req]]
   (request-async! :delete url req))
+
+(defn sse
+  [url & [opts]]
+  (kvlt/event-source! url opts))
