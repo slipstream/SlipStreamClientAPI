@@ -32,4 +32,4 @@
 
 (defn sse
   [url & [opts]]
-  (kvlt/event-source! url opts))
+  (kvlt/event-source! url (assoc opts :kvlt.platform/insecure? true))) ;; FIXME: Need better solution!

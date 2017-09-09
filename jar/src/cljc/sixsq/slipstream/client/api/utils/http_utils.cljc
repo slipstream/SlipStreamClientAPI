@@ -5,6 +5,6 @@
 (defn process-req
   [req]
   (-> req
-      (assoc http-lib-insecure-key (:insecure? req))
+      (assoc http-lib-insecure-key true #_(:insecure? req)) ;; FIXME: Need better solution!
       (dissoc :insecure?)))
 

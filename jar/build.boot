@@ -31,7 +31,7 @@
                    [org.clojure/data.json]
                    [org.clojure/data.xml]
                    [org.clojure/core.async]
-                   [io.nervous/kvlt]
+                   [io.nervous/kvlt "0.1.4"]                ;; FIXME: For testing only!
                    [com.taoensso/timbre]
 
                    [org.json/json "20160810"]
@@ -73,7 +73,7 @@
   cljs {:optimizations :advanced
         :compiler-options {:language-in :ecmascript5}}
   ;; FIXME: Remove :process-shim flag when possible.
-  ;; See https://github.com/bensu/doo/pull/141 
+  ;; See https://github.com/bensu/doo/pull/141
   test-cljs {:js-env :phantom
              :doo-opts {:paths {:phantom "phantomjs --web-security=false"}}
              :cljs-opts {:language-in :ecmascript5
