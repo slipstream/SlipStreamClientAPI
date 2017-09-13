@@ -34,7 +34,7 @@
                    [io.nervous/kvlt "0.1.4"]                ;; FIXME: For testing only!
                    [com.taoensso/timbre]
 
-                   [org.json/json "20160810"]
+                   [org.json/json]
 
                    [doo]
                    [adzerk/boot-test]
