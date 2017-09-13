@@ -68,4 +68,13 @@
     "Search for CIMI resources of the given type, returning a list of the
      matching resources. The list will be wrapped within an envelope containing
      the metadata of the collection and search. The returned document is in EDN
-     format."))
+     format.")
+
+  (operation
+    [this url-or-id operation]
+    [this url-or-id operation data]
+    [this url-or-id operation data options]
+    "Executes the chosen operation on the resource identified to the
+     url-or-id. The operation must specify the full URI. If the data is
+     provided, then it will be sent as a JSON document as the body of the POST
+     request. Standard options can also be provided."))
