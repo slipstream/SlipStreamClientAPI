@@ -50,6 +50,12 @@
     (<?? (cimi/search async-context resource-type nil)))
   (search [_ resource-type options]
     (<?? (cimi/search async-context resource-type options)))
+  (operation [_ url-or-id operation]
+    (<?? (cimi/operation async-context url-or-id operation)))
+  (operation [_ url-or-id operation data]
+    (<?? (cimi/operation async-context url-or-id operation data)))
+  (operation [_ url-or-id operation data options]
+    (<?? (cimi/operation async-context url-or-id operation data options)))
 
   pricing/pricing
   (place-and-rank [_ module-uri connectors]
