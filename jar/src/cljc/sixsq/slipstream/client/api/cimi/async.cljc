@@ -78,19 +78,34 @@
 
   (get [this url-or-id]
     (cimi/get this url-or-id nil))
-  (get [this url-or-id options]
-    (go
-      (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/get @state url-or-id options))]
-        (u/update-state state :token token)
-        response)))
+  (get [this url-or-id {:keys [sse] :as options}]
+    (if sse
+      (impl/get-sse @state url-or-id options)
+      (go
+        (<! (cimi/cloud-entry-point this))
+        (let [[response token] (<! (impl/get @state url-or-id options))]
+          (u/update-state state :token token)
+          response))))
 
   (search [this resource-type]
     (cimi/search this resource-type nil))
-  (search [this resource-type options]
+  (search [this resource-type {:keys [sse] :as options}]
+    (if sse
+      (impl/search-sse @state resource-type options)
+      (go
+        (<! (cimi/cloud-entry-point this))
+        (let [[response token] (<! (impl/search @state resource-type options))]
+          (u/update-state state :token token)
+          response))))
+
+  (operation [this url-or-id operation]
+    (cimi/operation this url-or-id operation nil nil))
+  (operation [this url-or-id operation data]
+    (cimi/operation this url-or-id operation data nil))
+  (operation [this url-or-id operation data options]
     (go
       (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/search @state resource-type options))]
+      (let [[response token] (<! (impl/operation @state url-or-id operation data options))]
         (u/update-state state :token token)
         response)))
 
