@@ -65,6 +65,8 @@
    an EDN document."
   []
   (comp
+    (map identity))                                         ;; FIXME: Throw on errors, convert data, json
+  #_(comp
     (map :data)
     (map json/json->edn)))
 
@@ -74,6 +76,16 @@
   [& [resource-id]]
   (let [msg "unauthorized"
         data (merge {:status 403, :message msg}
+                    (when resource-id {:resource-id resource-id}))
+        e (ex-info msg data)]
+    [e nil]))
+
+(defn unknown-operation
+  "Returns a tuple containing an exception that has a 400 client error
+   and a reference to the resource. The second element of the tuple is nil."
+  [& [resource-id]]
+  (let [msg "unknown operation"
+        data (merge {:status 400, :message msg}
                     (when resource-id {:resource-id resource-id}))
         e (ex-info msg data)]
     [e nil]))
