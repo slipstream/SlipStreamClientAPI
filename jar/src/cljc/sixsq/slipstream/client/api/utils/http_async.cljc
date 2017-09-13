@@ -31,5 +31,6 @@
   (request-async! :delete url req))
 
 (defn sse
-  [url & [opts]]
-  (kvlt/event-source! url (assoc opts :kvlt.platform/insecure? true))) ;; FIXME: Need better solution!
+  [url & [{:keys [options] :as opts}]]
+  (let [opts (assoc opts :options (merge options {:kvlt.platform/insecure? true}))] ;; FIXME: Do not hardcode this!
+    (kvlt/event-source! url opts)))
