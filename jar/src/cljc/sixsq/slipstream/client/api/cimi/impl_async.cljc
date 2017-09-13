@@ -38,7 +38,8 @@
   "Creates a channel that extracts returns the JSON body as a keywordized EDN
    data structure from an SSE message."
   []
-  (chan 1 (u/event-transducer) u/error-tuple))              ;; FIXME: should not be a tuple here
+  (chan 1)
+  #_(chan 1 (u/event-transducer) identity))
 
 (defn- create-op-url-chan
   "Creates a channel that extracts the operations from a collection or
@@ -103,13 +104,18 @@
 (defn get
   "Reads the CIMI resource identified by the URL or resource id. Returns the
    resource as an edn data structure in a channel."
-  [{:keys [token cep] :as state} url-or-id {:keys [sse] :as options}]
+  [{:keys [token cep] :as state} url-or-id options]
   (let [url (cu/ensure-url (:baseURI cep) url-or-id)]
-    (if sse
-      [(http/sse url {:chan (create-sse-chan)}) token]      ;; FIXME: Pass token for clojure?
-      (let [opts (-> (cu/req-opts token)
-                     (assoc :chan (create-chan)))]
-        (http/get url opts)))))
+    (let [opts (-> (cu/req-opts token)
+                   (assoc :chan (create-chan)))]
+      (http/get url opts))))
+
+(defn get-sse
+  "Reads the CIMI resource identified by the URL or resource id. Returns the
+   resource as an edn data structure in a channel."
+  [{:keys [token cep] :as state} url-or-id options]
+  (let [url (cu/ensure-url (:baseURI cep) url-or-id)]
+    (http/sse url {:chan (create-sse-chan)})))
 
 (defn search
   "Search for CIMI resources within the collection identified by its type or
@@ -120,13 +126,35 @@
   (let [url (or (u/get-collection-url cep collection-type-or-url)
                 (u/verify-collection-url cep collection-type-or-url))
         query-string (url/map->query (u/select-cimi-params options))]
-    (if sse
-      [(http/sse (str url "?" query-string) {:chan (create-sse-chan)}) token] ;; FIXME: Pass token for clojure?
-      (let [opts (-> (cu/req-opts token query-string)
-                     (assoc :type "application/x-www-form-urlencoded")
-                     (assoc :query-params (u/remove-cimi-params options))
+    (let [opts (-> (cu/req-opts token query-string)
+                   (assoc :type "application/x-www-form-urlencoded")
+                   (assoc :query-params (u/remove-cimi-params options))
+                   (assoc :chan (create-chan)))]
+      (http/put url opts))))
+
+(defn search-sse
+  "Search for CIMI resources within the collection identified by its type or
+   URL, returning a list of the matching resources (in a channel). The list
+   will be wrapped within an envelope containing the metadata of the collection
+   and search."
+  [{:keys [token cep] :as state} collection-type-or-url {:keys [sse] :as options}]
+  (let [url (or (u/get-collection-url cep collection-type-or-url)
+                (u/verify-collection-url cep collection-type-or-url))
+        query-string (url/map->query (u/select-cimi-params options))]
+    (let [opts {:chan    (create-sse-chan)
+                :options {:headers {:cookie token}}}]
+      (http/sse (str url "?" query-string) opts))))
+
+(defn operation
+  "Reads the CIMI resource identified by the URL or resource id and then
+   'executes' the given operation."
+  [{:keys [token cep] :as state} url-or-id operation data options]
+  (go
+    (if-let [operation-url (<! (get-resource-op-url state operation url-or-id))]
+      (let [opts (-> (cu/req-opts token)
                      (assoc :chan (create-chan)))]
-        (http/put url opts)))))
+        (<! (http/get operation-url opts)))                 ;; FIXME: Should be POST rather than GET.
+      (u/unknown-operation url-or-id))))
 
 (defn cloud-entry-point
   "Retrieves the cloud entry point from the given endpoint. The cloud entry
