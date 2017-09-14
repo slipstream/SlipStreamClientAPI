@@ -38,13 +38,11 @@
   [m]
   (assoc m :chan (create-chan)))
 
-;; FIXME: Provide reduced data from the event!
 (defn- create-sse-chan
-  "Creates a channel that extracts returns the JSON body as a keywordized EDN
-   data structure from an SSE message."
+  "Creates a channel that extracts the data from an SSE message and returns
+   the JSON body as a keywordized EDN data structure."
   []
-  (chan 1)
-  #_(chan 1 (u/event-transducer) identity))
+  (chan 1 (u/event-transducer) identity))
 
 (defn- assoc-sse-chan
   [m]
@@ -67,6 +65,7 @@
   (let [url (or (u/get-collection-url cep collection-name-or-url)
                 (u/verify-collection-url cep collection-name-or-url))
         opts (-> (cu/req-opts token (url/map->query {"$last" 0}))
+                 (merge options)
                  (assoc :type "application/x-www-form-urlencoded")
                  (assoc-op-url-chan op baseURI))]
     (http/put url opts)))
@@ -140,14 +139,18 @@
    URL, returning a list of the matching resources (in a channel). The list
    will be wrapped within an envelope containing the metadata of the collection
    and search."
-  [{:keys [token cep] :as state} collection-type-or-url options]
+  [{:keys [token cep] :as state} collection-type-or-url {:keys [insecure?] :as options}]
   (let [url (or (u/get-collection-url cep collection-type-or-url)
                 (u/verify-collection-url cep collection-type-or-url))
         query-string (url/map->query (u/select-cimi-params options))]
-    (let [opts (-> (cu/req-opts token query-string)
+    (let [query-params (-> options
+                           u/remove-cimi-params
+                           u/remove-req-params)
+          opts (-> (cu/req-opts token query-string)
                    (assoc :type "application/x-www-form-urlencoded")
-                   (assoc :query-params (u/remove-cimi-params options))
-                   (assoc :chan (create-chan)))]
+                   (assoc :query-params query-params)
+                   (assoc :insecure? insecure?)
+                   assoc-chan)]
       (http/put url opts))))
 
 (defn search-sse

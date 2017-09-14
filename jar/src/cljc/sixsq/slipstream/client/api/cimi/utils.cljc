@@ -8,7 +8,7 @@
     [sixsq.slipstream.client.api.utils.error :as e]
     [sixsq.slipstream.client.api.utils.json :as json]))
 
-(def ^:const cimi-params #{:$first :$last :$filter :$select :$expand :$orderby})
+(def ^:const cimi-params #{:$first :$last :$filter :$select :$expand :$orderby :$aggregation})
 
 (defn select-cimi-params
   "Strips keys from the provided map except for CIMI request parameters and
@@ -23,6 +23,12 @@
   [m]
   (when (map? m)
     (select-keys m (set/difference (set (keys m)) cimi-params))))
+
+(defn remove-req-params
+  "Strips the insecure? and sse? options from the provided map."
+  [m]
+  (when (map? m)
+    (into {} (remove (fn [[k v]] (contains? #{:insecure? :sse?} k)) m))))
 
 (defn update-state
   "If the token is not nil, then updates the value of the :token key inside
@@ -65,8 +71,7 @@
    an EDN document."
   []
   (comp
-    (map identity))                                         ;; FIXME: Throw on errors, convert data, json
-  #_(comp
+    (map e/throw-if-error)
     (map :data)
     (map json/json->edn)))
 
