@@ -4,19 +4,19 @@
     [clojure.test :refer [deftest is are testing run-tests]]))
 
 (deftest test-process-req
-  (let [req (h/process-req {})]
-    (is (contains? req h/http-lib-insecure-key))
-    (is (not (h/http-lib-insecure-key req))))
-  (let [req (h/process-req {:a 1})]
+  (let [req (h/set-or-clear-insecure-flag {})]
+    (is (contains? req :kvlt.platform/insecure?))
+    (is (not (:kvlt.platform/insecure? req))))
+  (let [req (h/set-or-clear-insecure-flag {:a 1})]
     (is (contains? req :a))
-    (is (contains? req h/http-lib-insecure-key))
-    (is (not (h/http-lib-insecure-key req))))
-  (let [req (h/process-req {:insecure? true})]
+    (is (contains? req :kvlt.platform/insecure?))
+    (is (not (:kvlt.platform/insecure? req))))
+  (let [req (h/set-or-clear-insecure-flag {:insecure? true})]
     (is (not (contains? req :insecure?)))
-    (is (contains? req h/http-lib-insecure-key))
-    (is (true? (h/http-lib-insecure-key req))))
-  (let [req (h/process-req {:insecure? false})]
+    (is (contains? req :kvlt.platform/insecure?))
+    (is (true? (:kvlt.platform/insecure? req))))
+  (let [req (h/set-or-clear-insecure-flag {:insecure? false})]
     (is (not (contains? req :insecure?)))
-    (is (contains? req h/http-lib-insecure-key))
-    (is (false? (h/http-lib-insecure-key req)))))
+    (is (contains? req :kvlt.platform/insecure?))
+    (is (false? (:kvlt.platform/insecure? req)))))
 

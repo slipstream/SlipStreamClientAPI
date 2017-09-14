@@ -2,15 +2,18 @@
   (:refer-clojure :exclude [get]))
 
 (defprotocol cimi
-  "All of the SCRUD (search, create, read, update, and delete) actions for
-   CIMI resources.
+  "This protocol (interface) defines all the SCRUD (search, create, read,
+   update, and delete) actions for CIMI resources. It also defines convenience
+   functions for authenticating with the server and a function to execute
+   specialized operations on a given resource or collection.
 
-   Note that the return types will depend on the concrete implementation. For
-   example, an asynchronous implementation will return channels from all of the
+   Note that the concrete return types will depend on the implementation. For
+   example, an asynchronous implementation may return channels from all of the
    functions."
 
   (login
     [this login-params]
+    [this login-params options]
     "Uses the given login-params to log into the SlipStream server. The
      login-params must be a map containing an :href element giving the id of
      the sessionTemplate resource and any other attributes required for the
@@ -19,17 +22,20 @@
 
   (logout
     [this]
+    [this options]
     "Performs a logout of the client by deleting the current session. Returns
      a map of the request response or nil if the user is not currently logged
      in.")
 
   (authenticated?
     [this]
+    [this options]
     "Returns true if the client has an active session; returns false otherwise
      (even for errors).")
 
   (cloud-entry-point
     [this]
+    [this options]
     "Retrieves the cloud entry point. The cloud entry point (CEP) acts as a
      directory of the available resources within the CIMI server. This function
      does not require authentication. The result is returned in EDN format.

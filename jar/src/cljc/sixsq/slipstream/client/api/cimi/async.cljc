@@ -1,6 +1,9 @@
 (ns sixsq.slipstream.client.api.cimi.async
-  "Defines the type that implements an asynchronous version of the CIMI
-   protocol. All of the defined return a channel with the result."
+  "Defines a type that implements an asynchronous version of the CIMI
+   protocol. All the defined functions return a channel containing the
+   result(s). When an application/event-stream result is requested, the stream
+   of events will be pushed to the returned channel, which can be closed by
+   calling `close!` on the channel."
   (:refer-clojure :exclude [get])
   #?(:cljs (:require-macros [cljs.core.async.macros :refer [go]]))
   (:require
@@ -19,32 +22,48 @@
 
   (login
     [this login-params]
-    (go
-      (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/login @state login-params))]
-        (u/update-state state :token token)
-        response)))
+    (cimi/login this login-params nil))
+  (login
+    [this login-params options]
+    (let [opts (merge (:default-options @state) options)]
+      (go
+        (<! (cimi/cloud-entry-point this opts))
+        (let [[response token] (<! (impl/login @state login-params opts))]
+          (u/update-state state :token token)
+          response))))
 
   (logout
     [this]
-    (go
-      (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/logout @state))]
-        (u/update-state state :token token)
-        response)))
+    (cimi/logout this nil))
+  (logout
+    [this options]
+    (let [opts (merge (:default-options @state) options)]
+      (go
+        (<! (cimi/cloud-entry-point this opts))
+        (let [[response token] (<! (impl/logout @state opts))]
+          (u/update-state state :token token)
+          response))))
 
   (authenticated?
     [this]
-    (go
-      (<! (cimi/cloud-entry-point this))
-      (let [[session-id _] (<! (impl/current-session @state))]
-        (not (nil? session-id)))))
+    (cimi/authenticated? this nil))
+  (authenticated?
+    [this options]
+    (let [opts (merge (:default-options @state) options)]
+      (go
+        (<! (cimi/cloud-entry-point this opts))
+        (let [[session-id _] (<! (impl/current-session @state opts))]
+          (not (nil? session-id))))))
 
   (cloud-entry-point
-    [_]
+    [this]
+    (cimi/cloud-entry-point this nil))
+  (cloud-entry-point
+    [_ options]
     (go
       (or (:cep @state)
-          (let [[cep token] (<! (impl/cloud-entry-point endpoint))]
+          (let [opts (merge (:default-options @state) options)
+                [cep token] (<! (impl/cloud-entry-point endpoint opts))]
             (u/update-state state :token token)
             (u/update-state state :cep cep)
             cep))))
@@ -53,61 +72,67 @@
     (cimi/add this resource-type data nil))
   (add [this resource-type data options]
     (go
-      (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/add @state resource-type data))]
+      (<! (cimi/cloud-entry-point this options))
+      (let [opts (merge (:default-options @state) options)
+            [response token] (<! (impl/add @state resource-type data opts))]
         (u/update-state state :token token)
         response)))
 
   (edit [this url-or-id data]
     (cimi/edit this url-or-id data nil))
   (edit [this url-or-id data options]
-    (go
-      (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/edit @state url-or-id data))]
-        (u/update-state state :token token)
-        response)))
+    (let [opts (merge (:default-options @state) options)]
+      (go
+        (<! (cimi/cloud-entry-point this opts))
+        (let [[response token] (<! (impl/edit @state url-or-id data opts))]
+          (u/update-state state :token token)
+          response))))
 
   (delete [this url-or-id]
     (cimi/delete this url-or-id nil))
   (delete [this url-or-id options]
-    (go
-      (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/delete @state url-or-id))]
-        (u/update-state state :token token)
-        response)))
+    (let [opts (merge (:default-options @state) options)]
+      (go
+        (<! (cimi/cloud-entry-point this opts))
+        (let [[response token] (<! (impl/delete @state url-or-id opts))]
+          (u/update-state state :token token)
+          response))))
 
   (get [this url-or-id]
     (cimi/get this url-or-id nil))
-  (get [this url-or-id {:keys [sse] :as options}]
-    (if sse
-      (impl/get-sse @state url-or-id options)
-      (go
-        (<! (cimi/cloud-entry-point this))
-        (let [[response token] (<! (impl/get @state url-or-id options))]
-          (u/update-state state :token token)
-          response))))
+  (get [this url-or-id {:keys [sse?] :as options}]
+    (let [opts (merge (:default-options @state) options)]
+      (if sse?
+        (impl/get-sse @state url-or-id opts)
+        (go
+          (<! (cimi/cloud-entry-point this opts))
+          (let [[response token] (<! (impl/get @state url-or-id opts))]
+            (u/update-state state :token token)
+            response)))))
 
   (search [this resource-type]
     (cimi/search this resource-type nil))
-  (search [this resource-type {:keys [sse] :as options}]
-    (if sse
-      (impl/search-sse @state resource-type options)
-      (go
-        (<! (cimi/cloud-entry-point this))
-        (let [[response token] (<! (impl/search @state resource-type options))]
-          (u/update-state state :token token)
-          response))))
+  (search [this resource-type {:keys [sse?] :as options}]
+    (let [opts (merge (:default-options @state) options)]
+      (if sse?
+        (impl/search-sse @state resource-type opts)
+        (go
+          (<! (cimi/cloud-entry-point this opts))
+          (let [[response token] (<! (impl/search @state resource-type opts))]
+            (u/update-state state :token token)
+            response)))))
 
   (operation [this url-or-id operation]
     (cimi/operation this url-or-id operation nil nil))
   (operation [this url-or-id operation data]
     (cimi/operation this url-or-id operation data nil))
   (operation [this url-or-id operation data options]
-    (go
-      (<! (cimi/cloud-entry-point this))
-      (let [[response token] (<! (impl/operation @state url-or-id operation data options))]
-        (u/update-state state :token token)
-        response)))
+    (let [opts (merge (:default-options @state) options)]
+      (go
+        (<! (cimi/cloud-entry-point this opts))
+        (let [[response token] (<! (impl/operation @state url-or-id operation data opts))]
+          (u/update-state state :token token)
+          response))))
 
   pricing/pricing
 
@@ -119,9 +144,32 @@
 
 (defn instance
   "A convenience function for creating an instance that implements the CIMI
-   protocol asynchronously. Use of this function is preferred to the raw
-   constructor."
+   protocol asynchronously. All of the CIMI functions for this client return a
+   core.async channel. Use of this function is preferred to the raw
+   constructor.
+
+   If the endpoint is not provided or is nil, the default endpoint will be
+   used.
+
+   Optionally, you may also provide a default set of options that will be
+   applied to all requests. The supported options are:
+
+     * :insecure? - a boolean value to turn off/on the SSL certificate
+       checking. This defaults to false. This option is only effective when
+       using Clojure.
+
+     * sse? - a boolean value to indicate that a channel of Server Sent Events
+       should be returned. Defaults to false. This option is only effective for
+       the `get` and `search` functions.
+
+   You can override your provided defaults by specifying options directly on
+   the individual CIMI function calls."
   ([]
-   (instance defaults/cep-endpoint))
+   (instance nil nil))
   ([cep-endpoint]
-   (->cimi-async cep-endpoint (atom {}))))
+   (instance cep-endpoint nil))
+  ([cep-endpoint default-options]
+   (let [defaults {:insecure? false
+                   :sse?      false}]
+     (->cimi-async (or cep-endpoint defaults/cep-endpoint)
+                   (atom {:default-options (merge defaults default-options)})))))

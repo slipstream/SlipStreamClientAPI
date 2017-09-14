@@ -58,7 +58,7 @@
   [meth url req]
   (try
     @(kvlt/request!
-      (merge {:method (keyword meth) :url url} (hu/process-req req)))
+       (merge {:method (keyword meth) :url url} (hu/set-or-clear-insecure-flag req)))
     (catch java.util.concurrent.ExecutionException e (re-throw-ex-info e))))
 
 (defn get

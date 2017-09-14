@@ -34,6 +34,11 @@
   []
   (chan 1 (u/response-xduce) u/error-tuple))
 
+(defn- assoc-chan
+  [m]
+  (assoc m :chan (create-chan)))
+
+;; FIXME: Provide reduced data from the event!
 (defn- create-sse-chan
   "Creates a channel that extracts returns the JSON body as a keywordized EDN
    data structure from an SSE message."
@@ -41,63 +46,74 @@
   (chan 1)
   #_(chan 1 (u/event-transducer) identity))
 
+(defn- assoc-sse-chan
+  [m]
+  (assoc m :chan (create-sse-chan)))
+
 (defn- create-op-url-chan
   "Creates a channel that extracts the operations from a collection or
    resource."
   [op baseURI]
   (chan 1 (u/extract-op-url op baseURI) identity))
 
+(defn- assoc-op-url-chan
+  [m op baseURI]
+  (assoc m :chan (create-op-url-chan op baseURI)))
+
 (defn get-collection-op-url
   "Returns the URL for the given operation and collection within a channel.
    The collection can be identified either by its name or URL."
-  [token {:keys [baseURI] :as cep} op collection-name-or-url]
+  [token {:keys [baseURI] :as cep} op collection-name-or-url options]
   (let [url (or (u/get-collection-url cep collection-name-or-url)
                 (u/verify-collection-url cep collection-name-or-url))
         opts (-> (cu/req-opts token (url/map->query {"$last" 0}))
                  (assoc :type "application/x-www-form-urlencoded")
-                 (assoc :chan (create-op-url-chan op baseURI)))]
+                 (assoc-op-url-chan op baseURI))]
     (http/put url opts)))
 
 (defn get-resource-op-url
   "Returns the URL for the given operation and collection within a channel."
-  [{:keys [token cep] :as state} op url-or-id]
+  [{:keys [token cep] :as state} op url-or-id options]
   (let [baseURI (:baseURI cep)
         url (cu/ensure-url baseURI url-or-id)
         opts (-> (cu/req-opts token)
-                 (assoc :chan (create-op-url-chan op baseURI)))]
+                 (merge options)
+                 (assoc-op-url-chan op baseURI))]
     (http/get url opts)))
 
 (defn add
   "Creates a new CIMI resource within the collection identified by the
    collection type or URL. The data will be converted into a JSON string before
    being sent to the server. The data must match the schema of the resource."
-  [{:keys [token cep] :as state} collection-type-or-url data]
+  [{:keys [token cep] :as state} collection-type-or-url data options]
   (go
-    (if-let [add-url (<! (get-collection-op-url token cep "add" collection-type-or-url))]
+    (if-let [add-url (<! (get-collection-op-url token cep "add" collection-type-or-url options))]
       (let [opts (-> (cu/req-opts token (json/edn->json data))
-                     (assoc :chan (create-chan)))]
+                     (merge options)
+                     assoc-chan)]
         (<! (http/post add-url opts)))
       (u/unauthorized collection-type-or-url))))
 
 (defn edit
   "Updates an existing CIMI resource identified by the URL or resource id."
-  [{:keys [token cep] :as state} url-or-id data]
-  (let [c (create-chan)]
-    (go
-      (if-let [edit-url (<! (get-resource-op-url state "edit" url-or-id))]
-        (let [opts (-> (cu/req-opts token (json/edn->json data))
-                       (assoc :chan c))]
-          (<! (http/put edit-url opts)))
-        (u/unauthorized url-or-id)))))
+  [{:keys [token cep] :as state} url-or-id data options]
+  (go
+    (if-let [edit-url (<! (get-resource-op-url state "edit" url-or-id options))]
+      (let [opts (-> (cu/req-opts token (json/edn->json data))
+                     (merge options)
+                     assoc-chan)]
+        (<! (http/put edit-url opts)))
+      (u/unauthorized url-or-id))))
 
 (defn delete
   "Deletes the CIMI resource identified by the URL or resource id from the
    server."
-  [{:keys [token cep] :as state} url-or-id]
+  [{:keys [token cep] :as state} url-or-id options]
   (go
-    (if-let [delete-url (<! (get-resource-op-url state "delete" url-or-id))]
+    (if-let [delete-url (<! (get-resource-op-url state "delete" url-or-id options))]
       (let [opts (-> (cu/req-opts token)
-                     (assoc :chan (create-chan)))]
+                     (merge options)
+                     assoc-chan)]
         (<! (http/delete delete-url opts)))
       (u/unauthorized url-or-id))))
 
@@ -107,22 +123,24 @@
   [{:keys [token cep] :as state} url-or-id options]
   (let [url (cu/ensure-url (:baseURI cep) url-or-id)]
     (let [opts (-> (cu/req-opts token)
-                   (assoc :chan (create-chan)))]
+                   (merge options)
+                   assoc-chan)]
       (http/get url opts))))
 
 (defn get-sse
   "Reads the CIMI resource identified by the URL or resource id. Returns the
    resource as an edn data structure in a channel."
   [{:keys [token cep] :as state} url-or-id options]
-  (let [url (cu/ensure-url (:baseURI cep) url-or-id)]
-    (http/sse url {:chan (create-sse-chan)})))
+  (http/sse (cu/ensure-url (:baseURI cep) url-or-id)
+            (cond-> (assoc-sse-chan options)
+                    token (assoc :options {:headers {:cookie token}}))))
 
 (defn search
   "Search for CIMI resources within the collection identified by its type or
    URL, returning a list of the matching resources (in a channel). The list
    will be wrapped within an envelope containing the metadata of the collection
    and search."
-  [{:keys [token cep] :as state} collection-type-or-url {:keys [sse] :as options}]
+  [{:keys [token cep] :as state} collection-type-or-url options]
   (let [url (or (u/get-collection-url cep collection-type-or-url)
                 (u/verify-collection-url cep collection-type-or-url))
         query-string (url/map->query (u/select-cimi-params options))]
@@ -137,23 +155,24 @@
    URL, returning a list of the matching resources (in a channel). The list
    will be wrapped within an envelope containing the metadata of the collection
    and search."
-  [{:keys [token cep] :as state} collection-type-or-url {:keys [sse] :as options}]
+  [{:keys [token cep] :as state} collection-type-or-url options]
   (let [url (or (u/get-collection-url cep collection-type-or-url)
                 (u/verify-collection-url cep collection-type-or-url))
         query-string (url/map->query (u/select-cimi-params options))]
-    (let [opts {:chan    (create-sse-chan)
-                :options {:headers {:cookie token}}}]
-      (http/sse (str url "?" query-string) opts))))
+    (http/sse (str url "?" query-string)
+              (cond-> (assoc-sse-chan (u/remove-cimi-params options))
+                      token (assoc :options {:headers {:cookie token}})))))
 
 (defn operation
   "Reads the CIMI resource identified by the URL or resource id and then
    'executes' the given operation."
   [{:keys [token cep] :as state} url-or-id operation data options]
   (go
-    (if-let [operation-url (<! (get-resource-op-url state operation url-or-id))]
-      (let [opts (-> (cu/req-opts token)
-                     (assoc :chan (create-chan)))]
-        (<! (http/get operation-url opts)))                 ;; FIXME: Should be POST rather than GET.
+    (if-let [operation-url (<! (get-resource-op-url state operation url-or-id options))]
+      (let [opts (-> (cu/req-opts token (json/edn->json data))
+                     (merge options)
+                     assoc-chan)]
+        (<! (http/post operation-url opts)))
       (u/unknown-operation url-or-id))))
 
 (defn cloud-entry-point
@@ -162,19 +181,23 @@
    This returns a channel which will contain the cloud entry point in edn
    format."
   ([]
-   (cloud-entry-point defaults/cep-endpoint))
+   (cloud-entry-point nil nil))
   ([endpoint]
-   (let [opts (-> (cu/req-opts)
-                  (assoc :chan (create-chan)))]
+   (cloud-entry-point endpoint nil))
+  ([endpoint options]
+   (let [endpoint (or endpoint defaults/cep-endpoint)
+         opts (-> (cu/req-opts)
+                  (merge options)
+                  assoc-chan)]
      (http/get endpoint opts))))
 
 (defn current-session
   "Returns (on a channel) the resource ID of the current session. If there is
    no current session (user is not logged in) or an error occurs, then nil will
    be returned on the channel."
-  [{:keys [token cep] :as state}]
+  [{:keys [token cep] :as state} options]
   (go
-    (let [[sessions token] (<! (search state "sessions" {}))]
+    (let [[sessions token] (<! (search state "sessions" options))]
       [(-> sessions :sessions first :id) token])))
 
 (defn logout
@@ -182,19 +205,20 @@
    function returns a tuple with the request response and the token passed back
    from the server (typically a cookie invalidating any previous one). The
    method will return nil if there was no current session."
-  [{:keys [token cep] :as state}]
+  [{:keys [token cep] :as state} options]
   (go
-    (let [[session-id _] (<! (current-session state))]
+    (let [[session-id _] (<! (current-session state options))]
       (when session-id
-        (<! (delete state session-id))))))
+        (<! (delete state session-id options))))))
 
 (defn login
   "Creates a session create template from the provided login parameters and
    posts this to the session collection to create a new session. Returns a
-   tuple with the request response and the token passed back from the server."
-  [state login-params]
-  (go
-    (let [template {:sessionTemplate login-params}]
-      (<! (add state "sessions" template)))))
+   tuple with the request response and the authentication token (if any) given
+   by the server."
+  ([state login-params]
+   (login state login-params nil))
+  ([state login-params options]
+   (add state "sessions" {:sessionTemplate login-params} options)))
 
 
