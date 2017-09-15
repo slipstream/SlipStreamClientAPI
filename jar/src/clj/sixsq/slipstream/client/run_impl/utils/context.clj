@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.run-impl.utils.context
+(ns ^{:no-doc true} sixsq.slipstream.client.run-impl.utils.context
   (:require
     [sixsq.slipstream.client.run-impl.utils.path :as cu]
     [clojure.java.io :as io]

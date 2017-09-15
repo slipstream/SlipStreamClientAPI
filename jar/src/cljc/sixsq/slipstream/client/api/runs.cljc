@@ -1,7 +1,7 @@
 (ns sixsq.slipstream.client.api.runs)
 
 (defprotocol runs
-  "Methods to get and search for runs.
+  "Functions to get and search for runs.
 
    Note that the return types will depend on the concrete
    implementation.  For example, an asynchronous implementation will

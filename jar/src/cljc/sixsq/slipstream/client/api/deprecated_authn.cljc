@@ -1,9 +1,12 @@
 (ns sixsq.slipstream.client.api.deprecated-authn
-  "Provides a utility to log into the SlipStream server and to
-  recover an access token.  No logout function is provided as
-  the access can be removed by just destroying the token.
+  "Provides a utility to log into the SlipStream server and to recover an
+  access token. No logout function is provided as the access can be removed by
+  just destroying the token.
 
-  The library API functions in namespaces under **sixsq.slipstream.client.api.lib**
+  NOTE: **This API is deprecated.** Use the supported API in the namespace
+  sixsq.slipstream.client.api.authn.
+
+  The library API functions in namespaces under **sixsq.slipstream.client.run-impl.lib**
   use dynamic context defined in this namespace.  To bootstrap
   the API with the context use [[login!]].  Each time
   when called, it alters the root of the context with the new

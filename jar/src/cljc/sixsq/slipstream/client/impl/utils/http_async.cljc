@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.http-async
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.http-async
   "Asynchronous wrapper around standard HTTP calls to provide a uniform interface.
 
   All actions accept requests in Ring-like format and return a channel.  All results

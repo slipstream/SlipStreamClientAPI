@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.run-impl.run
+(ns ^{:no-doc true} sixsq.slipstream.client.run-impl.run
   (:refer-clojure :exclude [get])
   (:require
     [sixsq.slipstream.client.impl.utils.utils :as u]

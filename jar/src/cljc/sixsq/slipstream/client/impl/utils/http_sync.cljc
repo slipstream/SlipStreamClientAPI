@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.http-sync
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.http-sync
   "Simple synchronous wrapper around an HTTP library to produce consistent
   CRUD interface.
 

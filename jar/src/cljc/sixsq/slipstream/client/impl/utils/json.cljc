@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.json
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.json
   "Utilities for handling JSON data."
   (:require
     [sixsq.slipstream.client.impl.utils.error :as e]

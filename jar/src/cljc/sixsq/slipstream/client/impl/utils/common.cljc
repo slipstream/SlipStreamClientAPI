@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.common
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.common
   "Provides utilities that support the SCRUD actions for CIMI resources.
    Although these functions are public, they are not part of the public
    API and may change without notice."

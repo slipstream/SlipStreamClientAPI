@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.run-impl.lib.run
+(ns ^{:no-doc true} sixsq.slipstream.client.run-impl.lib.run
   "
   ## Purpose
 

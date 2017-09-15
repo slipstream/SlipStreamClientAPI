@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.run-impl.crud
+(ns ^{:no-doc true} sixsq.slipstream.client.run-impl.crud
   (:refer-clojure :exclude [get])
   (:require
     [sixsq.slipstream.client.impl.utils.http-sync :as http]

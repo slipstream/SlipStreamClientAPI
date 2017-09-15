@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.xml
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.xml
   "Utilities for dealing with XML.  WARNING: the clojure representation
    of translated XML documents are not identical between Clojure and
    ClojureScript!"

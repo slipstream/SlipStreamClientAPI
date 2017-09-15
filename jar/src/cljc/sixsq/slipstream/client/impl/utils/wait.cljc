@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.wait
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.wait
   #?(:cljs (:require-macros [cljs.core.async.macros :refer [go-loop]]))
   (:require
    [clojure.core.async :refer #?(:clj  [timeout <! go-loop <!!]

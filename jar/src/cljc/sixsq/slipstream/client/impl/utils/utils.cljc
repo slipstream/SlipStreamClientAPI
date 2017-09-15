@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.utils
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.utils
   (:require [superstring.core :as s]
             [clojure.walk :as walk]))
 

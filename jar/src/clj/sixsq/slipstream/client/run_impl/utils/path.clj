@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.run-impl.utils.path
+(ns ^{:no-doc true} sixsq.slipstream.client.run-impl.utils.path
   (:require [clojure.string :as str])
   (:import [java.io File]))
 

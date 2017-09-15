@@ -8,8 +8,8 @@
    protocol. Synchronous and asynchronous implementations are available in the
    following namespaces:
 
-    * `sixsq.slipstream.client.api.cimi.async`
-    * `sixsq.slipstream.client.api.cimi.sync`
+    * `sixsq.slipstream.client.async`
+    * `sixsq.slipstream.client.sync`
 
    and can be created easily via the `instance` function. Note that the
    concrete return types will depend on the implementation. The asynchronous

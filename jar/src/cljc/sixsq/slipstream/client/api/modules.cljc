@@ -1,7 +1,11 @@
 (ns sixsq.slipstream.client.api.modules)
 
 (defprotocol modules
-  "Provides methods to retrieve SlipStream modules."
+  "Provides functions to retrieve SlipStream modules.
+
+  Note that the return types will depend on the concrete implementation. For
+  example, an asynchronous implementation will return channels from all of
+  the functions."
 
   (get-module
     [this url-or-id]

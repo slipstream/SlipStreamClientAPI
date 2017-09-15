@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.run-impl.lib.app
+(ns ^{:no-doc true} sixsq.slipstream.client.run-impl.lib.app
   ""
   (:require
     [clojure.string :as str]

@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.java
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.java
   "Utilities convert between java and clojure data structures. The algorithm
    was written by Baishampayan Ghose and can be found here:
    http://grokbase.com/t/gg/clojure/11afb4wmb3/recursively-convert-java-map-to-clojure-map."

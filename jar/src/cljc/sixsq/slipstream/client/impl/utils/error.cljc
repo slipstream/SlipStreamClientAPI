@@ -1,4 +1,4 @@
-(ns sixsq.slipstream.client.impl.utils.error)
+(ns ^{:no-doc true} sixsq.slipstream.client.impl.utils.error)
 
 (defn error? [e]
   (instance? #?(:clj Exception :cljs js/Error) e))
