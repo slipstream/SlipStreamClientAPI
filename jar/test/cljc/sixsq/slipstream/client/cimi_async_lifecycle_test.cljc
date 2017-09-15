@@ -4,8 +4,8 @@
    tests (typically from the REPL), do the following:
 
    ```clojure
-   (require '[sixsq.slipstream.client.api.cimi-async-lifecycle-test :as t] :reload)
-   (in-ns 'sixsq.slipstream.client.api.cimi-async-lifecycle-test)
+   (require '[sixsq.slipstream.client.cimi-async-lifecycle-test :as t] :reload)
+   (in-ns 'sixsq.slipstream.client.cimi-async-lifecycle-test)
    (def ^:dynamic *server-info* (set-server-info \"username\" \"password\" \"https://nuv.la/\"))
    (run-tests)
    ```
