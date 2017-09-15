@@ -2,7 +2,9 @@
   "
   ## Purpose
 
-  The `run` namespace contains functions for interacting with SlipStream runs.
+  The `run` namespace contains functions for interacting with SlipStream runs.  This
+  is a higher level interface that is only available from Clojure. The functions in
+  this namespace may change without notice.
 
   It allows users to
 

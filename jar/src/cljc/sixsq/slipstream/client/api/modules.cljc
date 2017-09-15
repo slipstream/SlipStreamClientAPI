@@ -3,6 +3,11 @@
 (defprotocol modules
   "Provides functions to retrieve SlipStream modules.
 
+  This protocol targets the legacy SlipStream interface and provides
+  limited functionality. The module resources are being migrated to
+  the CIMI protocol and this protocol will disappear once that migration
+  is complete.
+
   Note that the return types will depend on the concrete implementation. For
   example, an asynchronous implementation will return channels from all of
   the functions."
