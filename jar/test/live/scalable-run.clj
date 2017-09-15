@@ -94,7 +94,7 @@ output.  Example:
 
 ;;
 ;; Imports.
-(require '[sixsq.slipstream.client.api.authn :as a])
+(require '[sixsq.slipstream.client.api.deprecated-authn :as a])
 (require '[sixsq.slipstream.client.api.lib.app :as p])
 
 (require '[sixsq.slipstream.client.api.run :as r] :reload)
