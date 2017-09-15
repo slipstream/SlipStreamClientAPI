@@ -22,12 +22,12 @@ core.async channel.
 (ns my.namespace
  (:require
    [sixsq.slipstream.client.api.cimi :as cimi]
-   [sixsq.slipstream.client.api.cimi.async :as async]
-   [sixsq.slipstream.client.api.cimi.sync :as sync]))
+   [sixsq.slipstream.client.async :as async]
+   [sixsq.slipstream.client.sync :as sync]))
 
 ;; Create an asynchronous client context.  Note that the
 ;; asynchronous client can be used from Clojure or ClojureScript.
-(def client-async (async/create-cimi-async))
+(def client-async (async/instance))
 
 ;; Returns a channel on which a document with directory of available
 ;; resource is pushed. User does not need to be authenticated.
@@ -46,7 +46,7 @@ core.async channel.
 ;; onto a channel.
 ;; NOTE: The synchronous client is only available in Clojure!
 
-(def client-sync (sync/create-cimi-sync))
+(def client-sync (sync/instance))
 (cimi/login client-sync {:href "session-template/internal"
                          :username "user"
                          :password "pass"})
