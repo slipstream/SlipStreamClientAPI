@@ -14,31 +14,34 @@
                        param-type})
 
 
-(defn assoc-comp-param
-  [m k v]
+(defn node-parameter [k v]
+  (let [[comp param] (str/split k #":")]
+    (if-not (or (str/blank? comp) (str/blank? param))
+      {(str "parameter--node--" comp "--" param) (str v)})))
+
+
+(defn process-kv
+  "process a key/value pair to be included in run parameters"
+  [k v]
   (let [k (str/trim (name k))]
     (cond
-      (str/blank? k) m
-      (str/includes? k ":") (let [[comp param] (str/split k #":")]
-                              (assoc m (str "parameter--node--" comp "--" param) (str v)))
-      :else (assoc m (str "parameter--" k) (str v)))))
+      (str/blank? k) nil
+      (= "scalable" k) {param-scalable (str v)}
+      (params-reserved k) {k (name v)}
+      (str/includes? k ":") (node-parameter k v)
+      :else {(str "parameter--" k) (str v)})))
 
 
-(defn parse-params-fn
+(defn process-params-fn
   "reduction function that accumulates map entries with the processed keys and
    values"
   [m k v]
-  (let [k (str/trim (name k))]
-    (cond
-      (str/blank? k) m
-      (= "scalable" k) (assoc m param-scalable (str v))
-      (params-reserved k) (assoc m k (name v))
-      :else (assoc-comp-param m k v))))
+  (merge m (process-kv k v)))
 
 
 (defn parse-params
   [params]
-  (reduce-kv parse-params-fn {} params))
+  (reduce-kv process-params-fn {} params))
 
 
 (defn assoc-module-uri
