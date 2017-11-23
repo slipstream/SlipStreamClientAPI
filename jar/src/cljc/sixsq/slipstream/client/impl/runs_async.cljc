@@ -32,18 +32,23 @@
 (defn get-run
   "Reads the CIMI resource identified by the URL or resource id.  Returns
    the resource as an edn data structure in a channel."
-  [token endpoint url-or-id]
+  [token endpoint url-or-id {:keys [insecure?] :as options}]
   (let [url (cu/ensure-url-slash endpoint url-or-id)
         opts (-> (cu/req-opts token)
+                 (assoc :insecure? insecure?)
                  (assoc :chan (create-chan)))]
     (http/get url opts)))
+
+(defn- query-params [options]
+  (select-keys options #{:cloud :activeOnly :offset :limit}))
 
 (defn search-runs
   "Search for CIMI resources of the given type, returning a list of the
    matching resources (in a channel). The list will be wrapped within
    an envelope containing the metadata of the collection and search."
-  [token endpoint options]
+  [token endpoint {:keys [insecure?] :as options}]
   (let [opts (-> (cu/req-opts token)
-                 (assoc :query-params options)
+                 (assoc :query-params (query-params options))
+                 (assoc :insecure? insecure?)
                  (assoc :chan (create-xml-chan)))]
     (http/get endpoint opts)))

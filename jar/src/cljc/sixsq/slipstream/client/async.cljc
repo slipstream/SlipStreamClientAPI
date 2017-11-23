@@ -147,10 +147,12 @@
   pricing/pricing
 
   (place-and-rank [this module-uri connectors]
+    (pricing/place-and-rank this module-uri connectors nil))
+  (place-and-rank [this module-uri connectors options]
     (go
       (let [{:keys [baseURI]} (<! (cimi/cloud-entry-point this))
             endpoint (second (re-matches #"^(https?://[^/]+)/.*$" baseURI))]
-        (<! (pi/place-and-rank @state endpoint module-uri connectors)))))
+        (<! (pi/place-and-rank @state endpoint module-uri connectors options)))))
 
   modules/modules
 
@@ -159,7 +161,7 @@
   (get-module [this url-or-id options]
     (go
       (let [token (:token @state)]
-        (<! (modules-impl/get-module token modules-endpoint url-or-id)))))
+        (<! (modules-impl/get-module token modules-endpoint url-or-id options)))))
 
   (get-module-children [this url-or-id]
     (modules/get-module-children this url-or-id nil))
@@ -167,9 +169,9 @@
     (go
       (let [token (:token @state)]
         (if url-or-id
-          (let [module (<! (modules-impl/get-module token modules-endpoint url-or-id))]
+          (let [module (<! (modules-impl/get-module token modules-endpoint url-or-id options))]
             (modules-utils/extract-children module))
-          (let [xml (<! (modules-impl/get-module-string token modules-endpoint nil))]
+          (let [xml (<! (modules-impl/get-module-string token modules-endpoint nil options))]
             (modules-utils/extract-xml-children xml))))))
 
   runs/runs
@@ -179,7 +181,7 @@
   (get-run [this url-or-id options]
     (go
       (let [token (:token @state)]
-        (<! (runs-impl/get-run token runs-endpoint url-or-id)))))
+        (<! (runs-impl/get-run token runs-endpoint url-or-id options)))))
 
   (search-runs [this]
     (runs/search-runs this nil))

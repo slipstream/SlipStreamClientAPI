@@ -27,18 +27,20 @@
 (defn get-module
   "Reads the module identified by the URL or resource id.  Returns
    the resource as an edn data structure in a channel."
-  [token endpoint url-or-id]
+  [token endpoint url-or-id {:keys [insecure?] :as options}]
   (let [url (cu/ensure-url-slash endpoint url-or-id)
         opts (-> (cu/req-opts token)
+                 (assoc :insecure? insecure?)
                  (assoc :chan (create-chan)))]
     (http/get url opts)))
 
 (defn get-module-string
   "Reads the module identified by the URL or resource id.  Returns
    the resource as an edn data structure in a channel."
-  [token endpoint url-or-id]
+  [token endpoint url-or-id {:keys [insecure?] :as options}]
   (let [url (cu/ensure-url-slash endpoint url-or-id)
         opts (-> (cu/req-opts token)
+                 (assoc :insecure? insecure?)
                  (assoc :chan (create-string-chan)))]
     (http/get url opts)))
 

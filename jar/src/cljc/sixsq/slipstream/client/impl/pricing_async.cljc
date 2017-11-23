@@ -28,15 +28,17 @@
   (chan 1 (json-body-xducer) identity))
 
 (defn place-and-rank
-  [{:keys [token] :as state} endpoint module-uri connectors]
+  [{:keys [token] :as state} endpoint module-uri connectors {:keys [insecure?] :as options}]
   (go
     (let [req {:moduleUri      module-uri
                :userConnectors connectors}
           opts (-> (cu/req-opts token (json/edn->json req))
+                   (assoc :insecure? insecure?)
                    (assoc :chan (create-chan)))
           module-info (<! (http/put (str endpoint "/ui/placement") opts))]
       (if-not (e/error? module-info)
         (let [opts (-> (cu/req-opts token (json/edn->json module-info))
+                       (assoc :insecure? insecure?)
                        (assoc :chan (create-chan)))
               pricing-info (<! (http/put (str endpoint "/filter-rank") opts))]
           pricing-info)
