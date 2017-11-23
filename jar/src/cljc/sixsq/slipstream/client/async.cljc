@@ -171,8 +171,8 @@
         (if url-or-id
           (let [module (<! (modules-impl/get-module token modules-endpoint url-or-id options))]
             (modules-utils/extract-children module))
-          (let [xml (<! (modules-impl/get-module-string token modules-endpoint nil options))]
-            (modules-utils/extract-xml-children xml))))))
+          (let [root (<! (modules-impl/get-module token modules-endpoint nil options))]
+            (modules-utils/extract-root-children root))))))
 
   runs/runs
 

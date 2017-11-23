@@ -76,6 +76,8 @@
 
   (place-and-rank [_ module-uri connectors]
     (<?? (pricing/place-and-rank async-context module-uri connectors)))
+  (place-and-rank [_ module-uri connectors options]
+    (<?? (pricing/place-and-rank async-context module-uri connectors options)))
 
   modules/modules
 
