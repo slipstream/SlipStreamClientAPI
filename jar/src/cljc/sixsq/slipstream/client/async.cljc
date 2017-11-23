@@ -150,9 +150,10 @@
     (pricing/place-and-rank this module-uri connectors nil))
   (place-and-rank [this module-uri connectors options]
     (go
-      (let [{:keys [baseURI]} (<! (cimi/cloud-entry-point this))
+      (let [opts (merge (:default-options @state) options)
+            {:keys [baseURI]} (<! (cimi/cloud-entry-point this))
             endpoint (second (re-matches #"^(https?://[^/]+)/.*$" baseURI))]
-        (<! (pi/place-and-rank @state endpoint module-uri connectors options)))))
+        (<! (pi/place-and-rank @state endpoint module-uri connectors opts)))))
 
   modules/modules
 
@@ -160,18 +161,20 @@
     (modules/get-module this url-or-id nil))
   (get-module [this url-or-id options]
     (go
-      (let [token (:token @state)]
-        (<! (modules-impl/get-module token modules-endpoint url-or-id options)))))
+      (let [opts (merge (:default-options @state) options)
+            token (:token @state)]
+        (<! (modules-impl/get-module token modules-endpoint url-or-id opts)))))
 
   (get-module-children [this url-or-id]
     (modules/get-module-children this url-or-id nil))
   (get-module-children [this url-or-id options]
     (go
-      (let [token (:token @state)]
+      (let [opts (merge (:default-options @state) options)
+            token (:token @state)]
         (if url-or-id
-          (let [module (<! (modules-impl/get-module token modules-endpoint url-or-id options))]
+          (let [module (<! (modules-impl/get-module token modules-endpoint url-or-id opts))]
             (modules-utils/extract-children module))
-          (let [root (<! (modules-impl/get-module token modules-endpoint nil options))]
+          (let [root (<! (modules-impl/get-module token modules-endpoint nil opts))]
             (modules-utils/extract-root-children root))))))
 
   runs/runs
@@ -180,29 +183,34 @@
     (runs/get-run this url-or-id nil))
   (get-run [this url-or-id options]
     (go
-      (let [token (:token @state)]
-        (<! (runs-impl/get-run token runs-endpoint url-or-id options)))))
+      (let [opts (merge (:default-options @state) options)
+            token (:token @state)]
+        (<! (runs-impl/get-run token runs-endpoint url-or-id opts)))))
 
   (start-run [this url-or-id]
     (runs/start-run this url-or-id nil))
   (start-run [this uri options]
     (go
-      (let [token (:token @state)]
-        (<! (runs-impl/start-run token runs-endpoint uri options)))))
+      (let [opts (assoc options :insecure? (:insecure? (:default-options @state)))
+            token (:token @state)]
+        (<! (runs-impl/start-run token runs-endpoint uri opts)))))
 
   (terminate-run [this url-or-id]
     (runs/terminate-run this url-or-id nil))
   (terminate-run [this url-or-id options]
     (go
-      (let [token (:token @state)]
-        (<! (runs-impl/terminate-run token runs-endpoint url-or-id options)))))
+      (let [opts (merge (:default-options @state) options)
+            token (:token @state)]
+        (<! (runs-impl/terminate-run token runs-endpoint url-or-id opts)))))
 
   (search-runs [this]
     (runs/search-runs this nil))
   (search-runs [this options]
     (go
-      (let [token (:token @state)]
-        (<! (runs-impl/search-runs token runs-endpoint options))))))
+      (let [opts (merge (:default-options @state) options)
+            token (:token @state)]
+        (<! (runs-impl/search-runs token runs-endpoint opts))))))
+
 
 (defn instance
   "A convenience function for creating an asynchronous, concrete instance of
