@@ -183,6 +183,13 @@
       (let [token (:token @state)]
         (<! (runs-impl/get-run token runs-endpoint url-or-id options)))))
 
+  (terminate-run [this url-or-id]
+    (runs/terminate-run this url-or-id nil))
+  (terminate-run [this url-or-id options]
+    (go
+      (let [token (:token @state)]
+        (<! (runs-impl/terminate-run token runs-endpoint url-or-id options)))))
+
   (search-runs [this]
     (runs/search-runs this nil))
   (search-runs [this options]

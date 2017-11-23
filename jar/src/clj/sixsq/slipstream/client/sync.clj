@@ -96,6 +96,10 @@
     (<?? (runs/get-run async-context url-or-id nil)))
   (get-run [_ url-or-id options]
     (<?? (runs/get-run async-context url-or-id options)))
+  (terminate-run [_ url-or-id]
+    (<?? (runs/terminate-run async-context url-or-id nil)))
+  (terminate-run [_ url-or-id options]
+    (<?? (runs/terminate-run async-context url-or-id options)))
   (search-runs [_]
     (<?? (runs/search-runs async-context nil)))
   (search-runs [_ options]
