@@ -6,6 +6,8 @@
     [sixsq.slipstream.client.impl.utils.http-async :as http]
     [sixsq.slipstream.client.impl.utils.common :as cu]
     [sixsq.slipstream.client.impl.utils.json :as json]
+    [sixsq.slipstream.client.impl.utils.run-params :as rp-utils]
+    [cemerick.url :as url]
     [clojure.core.async :refer [chan]]))
 
 
@@ -28,13 +30,28 @@
     (http/get url opts)))
 
 
+(defn start-run
+  "Start a run from the module identified by its URI."
+  [token endpoint uri {:keys [insecure?] :as options}]
+  (let [query-string (-> options
+                         (dissoc :insecure?)
+                         rp-utils/parse-params
+                         (rp-utils/assoc-module-uri uri)
+                         url/map->query)
+        opts (-> (cu/req-opts token query-string)
+                 (assoc :type "application/x-www-form-urlencoded")
+                 (assoc :insecure? insecure?)
+                 (assoc :chan (chan 1 (rp-utils/extract-location) identity)))]
+    (http/post endpoint opts)))
+
+
 (defn terminate-run
   "Terminates the run identified by the URL or resource id."
   [token endpoint url-or-id {:keys [insecure?] :as options}]
   (let [url (cu/ensure-url-slash endpoint url-or-id)
         opts (-> (cu/req-opts token)
                  (assoc :insecure? insecure?)
-                 (assoc :chan (create-chan)))]
+                 (assoc :chan (chan 1 identity identity)))]
     (http/delete url opts)))
 
 

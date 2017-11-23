@@ -96,6 +96,10 @@
     (<?? (runs/get-run async-context url-or-id nil)))
   (get-run [_ url-or-id options]
     (<?? (runs/get-run async-context url-or-id options)))
+  (start-run [_ url-or-id]
+    (<?? (runs/start-run async-context url-or-id nil)))
+  (start-run [_ url-or-id options]
+    (<?? (runs/start-run async-context url-or-id options)))
   (terminate-run [_ url-or-id]
     (<?? (runs/terminate-run async-context url-or-id nil)))
   (terminate-run [_ url-or-id options]
