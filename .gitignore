@@ -30,4 +30,3 @@ pom.xml.asc
 .hgignore
 .hg/
 **/.nrepl-*
-project.clj
