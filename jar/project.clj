@@ -13,7 +13,8 @@
 
   :plugins [[lein-parent "0.3.2"]
             [lein-doo "0.1.8"]
-            [lein-codox "0.10.3"]]
+            [lein-codox "0.10.3"]
+            [lein-shell "0.5.0"]]
 
   :parent-project {:coords  [com.sixsq.slipstream/parent "3.42-SNAPSHOT"]
                    :inherit [:min-lein-version :managed-dependencies :repositories]}
@@ -59,5 +60,8 @@
                     :source-paths   ["test/clj" "test/cljc"]
                     :resource-paths ["dev-resources"]}}
 
-  :aliases {"test" ["with-profile" "test" ["do" ["test"] ["doo" "phantom" "test" "once"]]]}
+  :aliases {"test" ["with-profile" "test" ["do" ["test"] ["doo" "phantom" "test" "once"]]]
+            "docs" ["codox"]
+            "publish" ["shell" "../publish-docs.sh"]
+            }
   )
