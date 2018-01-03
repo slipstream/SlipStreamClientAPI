@@ -17,7 +17,7 @@
             [lein-shell "0.5.0"]]
 
   :parent-project {:coords  [com.sixsq.slipstream/parent "3.42-SNAPSHOT"]
-                   :inherit [:min-lein-version :managed-dependencies :repositories]}
+                   :inherit [:min-lein-version :managed-dependencies :repositories :deploy-repositories]}
 
   :pom-location "target/"
 
@@ -35,6 +35,10 @@
           :language     :clojure
           :metadata     {:doc/format :markdown}}
 
+  :doo {:verbose true
+        :debug true
+        :paths {:phantom "phantomjs --web-security=false"}}
+
   :dependencies
   [[org.clojure/clojure]
    [org.clojure/clojurescript]
@@ -51,8 +55,8 @@
    [org.json/json]]
 
   :cljsbuild {:builds [{:id           "test"
-                        :source-paths ["src/clj" "src/cljc" "test/clj" "test/cljc" "test/cljs"]
-                        :compiler     {:main          sixsq.slipstream.client.runner
+                        :source-paths ["test/cljc" "test/cljs"]
+                        :compiler     {:main          'sixsq.slipstream.client.runner
                                        :output-to     "target/clienttest.js"
                                        :optimizations :advanced}}]}
 
@@ -60,8 +64,9 @@
                     :source-paths   ["test/clj" "test/cljc"]
                     :resource-paths ["dev-resources"]}}
 
-  :aliases {"test" ["with-profile" "test" ["do" ["test"] ["doo" "phantom" "test" "once"]]]
-            "docs" ["codox"]
+  :aliases {"test"    ["do"
+                       ["test"]
+                       ["doo" "phantom" "test" "once"]]
+            "docs"    ["codox"]
             "publish" ["shell" "../publish-docs.sh"]
-            }
-  )
+            })

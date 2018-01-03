@@ -30,3 +30,4 @@ pom.xml.asc
 .hgignore
 .hg/
 **/.nrepl-*
+**/out
