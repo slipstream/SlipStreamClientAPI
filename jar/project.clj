@@ -13,7 +13,7 @@
 
   :plugins [[lein-parent "0.3.2"]
             [lein-doo "0.1.8"]
-            [lein-codox "0.10.3"]
+            [kirasystems/lein-codox "0.10.4"]
             [lein-shell "0.5.0"]]
 
   :parent-project {:coords  [com.sixsq.slipstream/parent "3.42-SNAPSHOT"]
