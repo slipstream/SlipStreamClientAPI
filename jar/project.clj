@@ -66,7 +66,7 @@
 
   :aliases {"test"    ["do"
                        ["test"]
-                       ["doo" "phantom" "test" "once"]]
+                       ["with-profiles" "test" ["doo" "phantom" "test" "once"]]]
             "docs"    ["codox"]
             "publish" ["shell" "../publish-docs.sh"]
             })
