@@ -1,4 +1,4 @@
-(def +version+ "3.42-SNAPSHOT")
+(def +version+ "3.44-SNAPSHOT")
 
 ;; FIXME: Provide HTTPS access to Nexus.
 (require 'cemerick.pomegranate.aether)
