@@ -61,7 +61,7 @@
                         :source-paths ["test/cljc" "test/cljs"]
                         :compiler     {:main          'sixsq.slipstream.client.runner
                                        :output-to     "target/clienttest.js"
-                                       :optimizations :advanced}}]}
+                                       :optimizations :none}}]}
 
   :profiles {:test {:aot            :all
                     :source-paths   ["test/clj" "test/cljc"]
