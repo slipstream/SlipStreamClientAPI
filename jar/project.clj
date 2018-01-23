@@ -7,16 +7,19 @@
 
 (defproject
   com.sixsq.slipstream/SlipStreamClientAPI-jar
-  "3.42-SNAPSHOT"
+  "3.44-SNAPSHOT"
   :license
   {"Apache 2.0" "http://www.apache.org/licenses/LICENSE-2.0.txt"}
 
   :plugins [[lein-parent "0.3.2"]
             [lein-doo "0.1.8"]
-            [kirasystems/lein-codox "0.10.4"]
+            [kirasystems/lein-codox "0.10.4"] 
+            ;; FIXME update to lein-codox (remove kirasystems) after fix of 
+            ;; https://github.com/sattvik/leinjacker/issues/14
+            ;; (leinjacker 0.4.3 is published and lein-codox update their leinjacker dependency to 0.4.3) 
             [lein-shell "0.5.0"]]
 
-  :parent-project {:coords  [com.sixsq.slipstream/parent "3.42-SNAPSHOT"]
+  :parent-project {:coords  [com.sixsq.slipstream/parent "3.44-SNAPSHOT"]
                    :inherit [:min-lein-version :managed-dependencies :repositories :deploy-repositories]}
 
   :pom-location "target/"
