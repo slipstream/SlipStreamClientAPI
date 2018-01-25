@@ -6,7 +6,7 @@
   "http" #(org.apache.maven.wagon.providers.http.HttpWagon.))
 
 (defproject
-  com.sixsq.slipstream/SlipStreamClientAPI-jar
+  com.sixsq.slipstream/SlipStreamClojureAPI-cimi
   "3.45-SNAPSHOT"
   :license
   {"Apache 2.0" "http://www.apache.org/licenses/LICENSE-2.0.txt"}
@@ -34,7 +34,7 @@
   :aot [sixsq.slipstream.client.api.cimi
         sixsq.slipstream.client.api.authn]
 
-  :codox {:name         "com.sixsq.slipstream/SlipStreamClientAPI-jar"
+  :codox {:name         "com.sixsq.slipstream/SlipStreamClojureAPI-cimi"
           :version      ~+version+
           :source-paths #{"src/clj" "src/cljc"}
           :source-uri   "https://github.com/slipstream/SlipStreamClojureAPI/blob/master/jar/{filepath}#L{line}"

@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>SlipStreamClientAPI-rpm</artifactId>
+    <artifactId>SlipStreamClojureAPI-rpm</artifactId>
     <packaging>pom</packaging>
     <name>SlipStreamClojureAPI/rpm</name>
 
     <url>http://sixsq.com</url>
     <parent>
         <groupId>com.sixsq.slipstream</groupId>
-        <artifactId>SlipStreamClientAPI</artifactId>
+        <artifactId>SlipStreamClojureAPI</artifactId>
         <version>3.45-SNAPSHOT</version>
     </parent>
 
@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.sixsq.slipstream</groupId>
-            <artifactId>SlipStreamClientAPI-uber</artifactId>
+            <artifactId>SlipStreamClojureAPI-uber</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
@@ -48,7 +48,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>com.sixsq.slipstream</groupId>
-                                    <artifactId>SlipStreamClientAPI-uber</artifactId>
+                                    <artifactId>SlipStreamClojureAPI-uber</artifactId>
                                     <type>jar</type>
                                     <destFileName>clj-ss-client.jar</destFileName>
                                 </artifactItem>

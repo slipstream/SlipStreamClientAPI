@@ -6,7 +6,7 @@
   "http" #(org.apache.maven.wagon.providers.http.HttpWagon.))
 
 (defproject
-  com.sixsq.slipstream/SlipStreamClientAPI-uber
+  com.sixsq.slipstream/SlipStreamClojureAPI-uber
   "3.45-SNAPSHOT"
   :license
   {"Apache 2.0" "http://www.apache.org/licenses/LICENSE-2.0.txt"}
@@ -20,7 +20,7 @@
   :pom-location "target/"
 
   :dependencies
-  [[com.sixsq.slipstream/SlipStreamClientAPI-jar]]
+  [[com.sixsq.slipstream/SlipStreamClojureAPI-cimi]]
 
   :profile {:provided {:dependencies [[org.clojure/clojure]]}}
 
@@ -34,7 +34,7 @@
                         ["uberjar"]
                         ["pom"]
                         ["localrepo" "install" "-p" "target/pom.xml"
-                         ~(str "target/SlipStreamClientAPI-uber-" +version+ "-standalone.jar")
-                         "com.sixsq.slipstream/SlipStreamClientAPI-uber"
+                         ~(str "target/SlipStreamClojureAPI-uber-" +version+ "-standalone.jar")
+                         "com.sixsq.slipstream/SlipStreamClojureAPI-uber"
                          ~+version+]
                         ]]})
