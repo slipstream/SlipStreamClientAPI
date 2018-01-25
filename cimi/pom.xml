@@ -3,7 +3,7 @@
 
   <artifactId>SlipStreamClojureAPI-cimi-dep</artifactId>
   <packaging>pom</packaging>
-  <name>SlipStreamClojureAPI/jar</name>
+  <name>SlipStreamClojureAPI/cimi</name>
 
   <url>http://sixsq.com</url>
   <parent>

@@ -28,7 +28,7 @@
     </dependency>
     <dependency>
       <groupId>com.sixsq.slipstream</groupId>
-      <artifactId>SlipStreamClojureAPI-jar-dep</artifactId>
+      <artifactId>SlipStreamClojureAPI-cimi-dep</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
