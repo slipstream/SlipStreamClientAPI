@@ -5,13 +5,19 @@
     [clojure.data.json :as json])
     [sixsq.slipstream.client.impl.utils.error :as e]))
 
+(defn kw->str
+  "Converts a keyword to the equivalent string without the leading colon and
+   **preserving** any namespace."
+  [kw]
+  (subs (str kw) 1))
+
 (defn str->json [s]
   #?(:clj  (json/read-str s :key-fn keyword)
      :cljs (js->clj (js/JSON.parse s) :keywordize-keys true)))
 
 (defn edn->json [json]
   #?(:clj  (json/write-str json)
-     :cljs (js/JSON.stringify (clj->js json))))
+     :cljs (js/JSON.stringify (clj->js json :keyword-fn kw->str))))
 
 (defn json->edn [s]
   (cond
